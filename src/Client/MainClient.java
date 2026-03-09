@@ -29,6 +29,16 @@ public class MainClient {
 
         try {
             dSocket.send(dpo);
+
+            byte[] bufferIn = new byte[256];
+
+            DatagramPacket packetIn = new DatagramPacket(bufferIn, bufferIn.length);
+
+            dSocket.receive(packetIn); //Metodo bloccante
+            String received = new String(packetIn.getData(), 0, packetIn.getLength());
+            System.out.println("Ricezione effettuata: " + received);
+            System.out.println("Indirizzo IP: " +  packetIn.getAddress().getHostAddress());
+            System.out.println("Indirizzo porta: " + packetIn.getPort());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
