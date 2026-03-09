@@ -39,6 +39,8 @@ public class MainClient {
             System.out.println("Ricezione effettuata: " + received);
             System.out.println("Indirizzo IP: " +  packetIn.getAddress().getHostAddress());
             System.out.println("Indirizzo porta: " + packetIn.getPort());
+
+            dSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
