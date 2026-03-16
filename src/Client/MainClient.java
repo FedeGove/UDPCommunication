@@ -41,6 +41,7 @@ public class MainClient {
             System.out.println("Indirizzo porta: " + packetIn.getPort());
 
             dSocket.close();
+            
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
