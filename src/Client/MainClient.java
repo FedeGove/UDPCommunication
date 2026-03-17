@@ -1,48 +1,44 @@
 package Client;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
-import java.net.UnknownHostException;
-import java.net.SocketException;
+import java.net.*;
 
 public class MainClient {
     public static void main(String[] args) {
         System.out.println("Client");
 
         int port = 3000;
-        String multicastGroup = "230.0.0.1"; // Stesso indirizzo del server+ù+
+        String multicastGroup = "230.0.0.1";
 
         try {
-            // 1. Indirizzo del gruppo multicast (non più localhost!)
             InetAddress group = InetAddress.getByName(multicastGroup);
 
-            // 2. Socket normale per inviare al gruppo
-            DatagramSocket dSocket = new DatagramSocket();
+            // MulticastSocket invece di DatagramSocket
+            MulticastSocket mSocket = new MulticastSocket();
+
+            // Join del gruppo
+            mSocket.joinGroup(group);
 
             String message = "Ciao";
-
-            // 3. Il pacchetto è indirizzato al gruppo multicast
             DatagramPacket dpo = new DatagramPacket(
                     message.getBytes(), message.length(), group, port
             );
 
-            dSocket.send(dpo);
+            mSocket.send(dpo);
 
-            // 4. Attende la risposta unicast dal server
             byte[] bufferIn = new byte[256];
             DatagramPacket packetIn = new DatagramPacket(bufferIn, bufferIn.length);
 
-            dSocket.receive(packetIn);
+            mSocket.receive(packetIn);
             String received = new String(packetIn.getData(), 0, packetIn.getLength());
 
             System.out.println("Ricezione effettuata: " + received);
             System.out.println("Indirizzo IP: " + packetIn.getAddress().getHostAddress());
             System.out.println("Porta: " + packetIn.getPort());
 
-            dSocket.close();
+            // Lascia il gruppo e chiudi
+            mSocket.leaveGroup(group);
+            mSocket.close();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
